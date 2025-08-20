@@ -2595,8 +2595,8 @@ int main(void)
   nrf24_tx_pwr(_0dbm);
  8001714:	2003      	movs	r0, #3
  8001716:	f7ff fc91 	bl	800103c <nrf24_tx_pwr>
-  nrf24_data_rate(_1mbps);
- 800171a:	2000      	movs	r0, #0
+  nrf24_data_rate(_2mbps);
+ 800171a:	2001      	movs	r0, #1
  800171c:	f7ff fcb5 	bl	800108a <nrf24_data_rate>
   nrf24_set_channel(channel);
  8001720:	4bb9      	ldr	r3, [pc, #740]	@ (8001a08 <main+0x334>)
@@ -2618,11 +2618,11 @@ int main(void)
  800173e:	2001      	movs	r0, #1
  8001740:	f7ff fdaa 	bl	8001298 <nrf24_set_crc>
 
-  nrf24_auto_retr_delay(4);
- 8001744:	2004      	movs	r0, #4
+  nrf24_auto_retr_delay(0);
+ 8001744:	2000      	movs	r0, #0
  8001746:	f7ff fee3 	bl	8001510 <nrf24_auto_retr_delay>
-  nrf24_auto_retr_limit(10);
- 800174a:	200a      	movs	r0, #10
+  nrf24_auto_retr_limit(5);
+ 800174a:	2005      	movs	r0, #5
  800174c:	f7ff ff05 	bl	800155a <nrf24_auto_retr_limit>
 
   nrf24_open_tx_pipe(addr);
