@@ -37,8 +37,8 @@ typedef struct {
     uint8_t id;
     float Vx, Vy, Vang;
     uint8_t kicker;
-    int config;
-    int param;
+    uint8_t config;
+    uint8_t param;
 } Pacote;
 #pragma pack(pop)
 
@@ -48,8 +48,9 @@ uint8_t pld_size = sizeof(Pacote);
 
 
 
-
+Pacote pct_undf;
 Pacote pct_robo[16];
+uint8_t pendente_undf;
 uint8_t pendente[16];
 /* USER CODE END PTD */
 
@@ -85,11 +86,19 @@ static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN 0 */
 uint8_t usart_rx[sizeof(Pacote) + 2];
 Pacote pacote_recebido;
+Pacote pct_temp;
 void processa_pacote(uint8_t* buffer) {
     if (buffer[0] == 0xAA && buffer[1] == 0xBB) {
         memcpy(&pacote_recebido, &buffer[2], sizeof(Pacote));
-        memcpy(&pct_robo[pacote_recebido.id], &buffer[2], sizeof(Pacote));
-        pendente[pacote_recebido.id] = 1;
+
+        memcpy(&pct_temp, &buffer[2], sizeof(Pacote));
+        if(pct_temp.id != 0xFF){
+        	memcpy(&pct_robo[pacote_recebido.id], &buffer[2], sizeof(Pacote));
+            pendente[pacote_recebido.id] = 1;
+        } else {
+        	memcpy(&pct_undf, &buffer[2], sizeof(Pacote));
+        	pendente_undf = 1;
+        }
     }
 }
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
@@ -177,6 +186,22 @@ int main(void)
       pct_robo[i].param = 0;
       pendente[i] = 0;
   }
+  pct_undf.id = 0xFF;
+  pct_undf.Vx = 0;
+  pct_undf.Vy = 0;
+  pct_undf.Vang = 0;
+  pct_undf.kicker = 0;
+  pct_undf.config = 0;
+  pct_undf.param = 0;
+  pendente_undf = 0;
+
+  pct_temp.id = 0xFF;
+  pct_temp.Vx = 0;
+  pct_temp.Vy = 0;
+  pct_temp.Vang = 0;
+  pct_temp.kicker = 0;
+  pct_temp.config = 0;
+  pct_temp.param = 0;
 
 
   HAL_UART_Receive_IT(&huart1, usart_rx, sizeof(usart_rx));  // primeira chamada
@@ -213,12 +238,30 @@ int main(void)
 				  i--;	//nao sei, resolveu, ele simplesmente nao transmite os pares sem isso. deve ser bobeira
 			  }
 		  }
+		  if (pendente_undf){
+		  			  memcpy(tx_buffer, &pct_undf, sizeof(Pacote));
+		  			  sprintf(tx_usart_buffer, "\nPacote enviado para robo %d\n", i);
+		  			  snprintf(msg, sizeof(msg), "%d %.2f %.2f %.2f %d %d %d\r\n",
+		  					   pct_undf.id,
+							   pct_undf.Vx,
+							   pct_undf.Vy,
+							   pct_undf.Vang,
+							   pct_undf.kicker,
+							   pct_undf.config,
+							   pct_undf.param);
+
+		  			  if (nrf24_transmit(tx_buffer, pld_size)) {
+		  				  HAL_UART_Transmit(&huart1, (uint8_t*)tx_usart_buffer, strlen(tx_usart_buffer), 100);
+		  				  HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), 100);
+		  				  pendente_undf = 0;
+		  			  }
 	  }
   }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   /* USER CODE END 3 */
+}
 }
 
 /**
