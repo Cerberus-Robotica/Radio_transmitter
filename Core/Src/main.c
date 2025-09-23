@@ -41,8 +41,8 @@ typedef struct {
 #pragma pack(pop)
 
 
-uint8_t addr[5] = {'A', 'S', 'U', 'R', 'T'};
-uint8_t channel = 123;
+uint8_t addr[5] = {'C', 'E', 'R', 'B', 'R'};
+uint8_t channel = 83;
 uint8_t pld_size = sizeof(Pacote);
 
 
@@ -285,7 +285,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
