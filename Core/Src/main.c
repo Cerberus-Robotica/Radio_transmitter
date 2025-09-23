@@ -37,9 +37,10 @@ typedef struct {
     uint8_t id;
     float Vx, Vy, Vang;
     uint8_t kicker;
+    int config;
+    int param;
 } Pacote;
 #pragma pack(pop)
-
 
 uint8_t addr[5] = {'C', 'E', 'R', 'B', 'R'};
 uint8_t channel = 83;
@@ -163,7 +164,7 @@ int main(void)
   ce_high();
   HAL_Delay(5);
 
-  char welcome_msg[] = "STM32 Blue Pill com CubeIDE a postos!\r\n";
+  char welcome_msg[] = "Estacao de rádio pronta!\r\n";
   HAL_UART_Transmit(&huart1, (uint8_t*)welcome_msg, strlen(welcome_msg), 100); // 100ms de timeout
 
   for (int i = 0; i < 16; i++) {
@@ -172,6 +173,8 @@ int main(void)
       pct_robo[i].Vy = 0;
       pct_robo[i].Vang = 0;
       pct_robo[i].kicker = 0;
+      pct_robo[i].config = 0;
+      pct_robo[i].param = 0;
       pendente[i] = 0;
   }
 
@@ -192,12 +195,14 @@ int main(void)
 		  if (pendente[i]){
 			  memcpy(tx_buffer, &pct_robo[i], sizeof(Pacote));
 			  sprintf(tx_usart_buffer, "\nPacote enviado para robo %d\n", i);
-			  snprintf(msg, sizeof(msg), "%d %.2f %.2f %.2f %d\r\n",
+			  snprintf(msg, sizeof(msg), "%d %.2f %.2f %.2f %d %d %d\r\n",
 					   pct_robo[i].id,
 					   pct_robo[i].Vx,
 					   pct_robo[i].Vy,
 					   pct_robo[i].Vang,
-					   pct_robo[i].kicker);
+					   pct_robo[i].kicker,
+					   pct_robo[i].config,
+					   pct_robo[i].param);
 
 			  if (nrf24_transmit(tx_buffer, pld_size)) {
 				  HAL_UART_Transmit(&huart1, (uint8_t*)tx_usart_buffer, strlen(tx_usart_buffer), 100);
