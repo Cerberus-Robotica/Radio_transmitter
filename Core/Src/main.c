@@ -219,7 +219,7 @@ int main(void)
 	  for (int i = 0; i < 16 ; i++){
 		  if (pendente[i]){
 			  memcpy(tx_buffer, &pct_robo[i], sizeof(Pacote));
-			  sprintf(tx_usart_buffer, "\nPacote enviado para robo %d\n", i);
+			  sprintf(tx_usart_buffer, "\nPacote enviado para robo %d\n", pct_robo[i].id);
 			  snprintf(msg, sizeof(msg), "%d %.2f %.2f %.2f %d %d %d\r\n",
 					   pct_robo[i].id,
 					   pct_robo[i].Vx,
@@ -240,7 +240,7 @@ int main(void)
 		  }
 		  if (pendente_undf){
 		  			  memcpy(tx_buffer, &pct_undf, sizeof(Pacote));
-		  			  sprintf(tx_usart_buffer, "\nPacote enviado para robo %d\n", i);
+		  			  sprintf(tx_usart_buffer, "\nPacote enviado para robo %d\n", pct_undf.id);
 		  			  snprintf(msg, sizeof(msg), "%d %.2f %.2f %.2f %d %d %d\r\n",
 		  					   pct_undf.id,
 							   pct_undf.Vx,
